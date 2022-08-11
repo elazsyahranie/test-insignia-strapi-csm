@@ -1,0 +1,20 @@
+.listOfSquares {
+  width: 50%;
+  margin: auto;
+}
+
+.squareContainer {
+  display: flex;
+  justify-content: center;
+}
+
+.squareCard {
+  /* width: 370px; */
+  height: 100px;
+  width: 330px;
+  margin: 7px;
+  border-style: solid;
+  border-width: 1px 1px 1px 1px;
+  border-color: black;
+  position: relative;
+}
