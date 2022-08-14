@@ -23,6 +23,7 @@ function AuthPage() {
       .then((res) => {
         console.log(res.data);
         localStorage.setItem("token", res.data.jwt);
+        localStorage.setItem("username", res.data.user.username);
         navigate("/");
       })
       .catch((err) => {

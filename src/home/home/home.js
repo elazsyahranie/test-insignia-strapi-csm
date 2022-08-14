@@ -11,6 +11,9 @@ import CreateOrder from "../../components/theApi/createOrder/createOrder";
 import OrderedTravelPackages from "../../components/theApi/orderedTravelPackages/orderedTravelPackages";
 import TravelPackages from "../../components/theApi/travelPackages/travelPackages";
 
+import { faDeleteLeft } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
 function Home() {
   const [listOfApi, setListOfApi] = useState(true);
 
@@ -23,6 +26,7 @@ function Home() {
   const [travelPackagesData, setTravelPackagesData] = useState([]);
 
   const theToken = localStorage.getItem("token");
+  const username = localStorage.getItem("username");
 
   const navigate = useNavigate();
 
@@ -85,8 +89,30 @@ function Home() {
   };
 
   const orderedTravelPackagePanel = (value, value2) => {
+    if (value) {
+      axios
+        .get(`http://localhost:1337/order-details`, {
+          headers: {
+            Authorization: `Bearer ${theToken}`,
+          },
+        })
+        .then((res) => {
+          setOrderedTravelPackage(res.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } else {
+      setCustomerData([]);
+    }
     setOrderedTravelPackage(value);
     setListOfApi(value2);
+  };
+
+  const logOut = () => {
+    localStorage.clear("token");
+    localStorage.clear("username");
+    navigate("/login");
   };
 
   return (
@@ -97,7 +123,8 @@ function Home() {
             <h5>Insignia CSM</h5>
           </Col>
           <Col lg={6} md={6} sm={6} className="text-end">
-            <span>Elazar Ibrahim</span>
+            <FontAwesomeIcon icon={faDeleteLeft} onClick={() => logOut()} />
+            <span>{username}</span>
           </Col>
         </Row>
       </Container>

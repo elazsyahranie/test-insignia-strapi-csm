@@ -5,7 +5,7 @@ import {
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import { useState } from "react";
-import { Form, Image, Button, Modal } from "react-bootstrap";
+import { Container, Form, Image, Button, Modal } from "react-bootstrap";
 import style from "./travelPackages.module.css";
 
 import axios from "axios";
@@ -13,9 +13,7 @@ import axios from "axios";
 function TravelPackages(props) {
   const [columnIndex, setColumnIndex] = useState("");
   const [columnData, setColumnData] = useState([]);
-  // const maxNumber = 69;
 
-  const [showImageModal, setShowImageModal] = useState(false);
   const [theImage, setTheImage] = useState("");
   const [showUploadImageButton, setShowUploadImageButton] = useState(false);
 
@@ -35,15 +33,9 @@ function TravelPackages(props) {
 
   const [createForm, setCreateForm] = useState({
     name: "",
-    desription: "",
+    description: "",
     price: "",
-    image: "",
-  });
-  const [createTemporaryData, setCreateTemporaryData] = useState({
-    name: "",
-    desription: "",
-    price: "",
-    image: "",
+    image: null,
   });
 
   const [deleteTemporaryData, setDeleteTemporaryData] = useState("");
@@ -70,6 +62,30 @@ function TravelPackages(props) {
         setTemporaryData({
           ...theData,
         });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  const handleCreateForm = (event) => {
+    setCreateForm({ ...createForm, [event.target.name]: event.target.value });
+  };
+
+  const submitCreateForm = () => {
+    // console.log(createForm);
+    axios
+      .post(
+        "http://localhost:1337/travel-packages",
+        { ...createForm },
+        {
+          headers: {
+            Authorization: `Bearer ${theToken}`,
+          },
+        }
+      )
+      .then((res) => {
+        const theData = res.data;
       })
       .catch((err) => {
         console.log(err);
@@ -138,7 +154,6 @@ function TravelPackages(props) {
   const handleClose = () => setShow(false);
   const handleShow = (data) => {
     setColumnData(data);
-    setShowImageModal(true);
     setEditForm(data);
     setShow(true);
   };
@@ -148,10 +163,9 @@ function TravelPackages(props) {
     setShowCreate(true);
   };
 
-  console.log(columnData);
-
   return (
     <>
+      {/* EDIT TRAVEL PACKAGE Modal */}
       <Modal {...columnData} show={show} onHide={handleClose}>
         <Modal.Header closeButton>
           <h3>Edit Travel Packages</h3>
@@ -168,19 +182,19 @@ function TravelPackages(props) {
               />
             </Form.Group>
             <Form.Group className="mb-2">
-              <Form.Label>Phone</Form.Label>
+              <Form.Label>Description</Form.Label>
               <Form.Control
-                type="number"
-                name="phone"
+                type="text"
+                name="description"
                 placeholder={columnData.description}
                 onChange={(event) => handleEditForm(event)}
               />
             </Form.Group>
             <Form.Group className="mb-2">
-              <Form.Label>Email</Form.Label>
+              <Form.Label>Price</Form.Label>
               <Form.Control
-                type="email"
-                name="email"
+                type="number"
+                name="price"
                 placeholder={columnData.price}
                 onChange={(event) => handleEditForm(event)}
               />
@@ -219,6 +233,44 @@ function TravelPackages(props) {
         </Modal.Body>
       </Modal>
 
+      {/* CREATE NEW TRAVEL PACKAGE Modal */}
+      <Modal show={showCreate} onHide={handleCloseCreate}>
+        <Modal.Header closeButton>
+          <Modal.Title>Create Handle Form</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+            <Form.Group className="mb-2">
+              <Form.Label>Name</Form.Label>
+              <Form.Control
+                type="text"
+                name="name"
+                onChange={(event) => handleCreateForm(event)}
+              />
+            </Form.Group>
+            <Form.Group className="mb-2">
+              <Form.Label>Description</Form.Label>
+              <Form.Control
+                type="text"
+                name="description"
+                onChange={(event) => handleCreateForm(event)}
+              />
+            </Form.Group>
+            <Form.Group className="mb-2">
+              <Form.Label>Price</Form.Label>
+              <Form.Control
+                type="number"
+                name="price"
+                onChange={(event) => handleCreateForm(event)}
+              />
+            </Form.Group>
+            <Button variant="primary" onClick={() => submitCreateForm()}>
+              Submit
+            </Button>
+          </Form>
+        </Modal.Body>
+      </Modal>
+
       <FontAwesomeIcon
         icon={faDeleteLeft}
         onClick={() => props.travel(false, true)}
@@ -240,6 +292,7 @@ function TravelPackages(props) {
           <tbody>
             {props.travelPackagesData &&
               props.travelPackagesData.map((item, index) => {
+                // console.log(item);
                 return (
                   <>
                     <tr
@@ -287,7 +340,13 @@ function TravelPackages(props) {
                           : null}
                       </td>
                       <td>
-                        {item.id === temporaryData.id &&
+                        {item.image && (
+                          <Image
+                            src={`${process.env.REACT_APP_BASE_URL}${item.image.formats.thumbnail.url}`}
+                            responsive
+                          />
+                        )}
+                        {/* {item.id === temporaryData.id &&
                         item.id !== deleteTemporaryData ? (
                           <Image
                             src={`${process.env.REACT_APP_BASE_URL}${temporaryData.image.formats.thumbnail.url}`}
@@ -300,7 +359,7 @@ function TravelPackages(props) {
                             responsive
                           />
                         ) : item.id !== temporaryData.id &&
-                          item.id === deleteTemporaryData ? null : null}
+                          item.id === deleteTemporaryData ? null : null} */}
                       </td>
                       <td
                         className={
@@ -323,6 +382,11 @@ function TravelPackages(props) {
           </tbody>
         </table>
       </div>
+      <Container>
+        <Button variant="primary" onClick={() => handleShowCreate()}>
+          + Create new Travel Package
+        </Button>
+      </Container>
     </>
   );
 }
