@@ -8,6 +8,10 @@
   justify-content: center;
 }
 
+.insideSquareButton {
+  width: 100%;
+}
+
 .squareCard {
   /* width: 370px; */
   height: 100px;

@@ -1,32 +1,42 @@
-import { Container, Row, Col } from "react-bootstrap";
+import { Container, Button } from "react-bootstrap";
 import style from "./listOfApi.module.css";
 
 function ListOfApi(props) {
   return (
     <>
-      <Container>
+      <Container className="pt-5">
         <div className={style.listOfSquares}>
-          <div className={style.squareContainer}>
-            <div className={style.squareCard} onClick={() => props.travel()}>
-              <div>
-                <h3 className={style.squareMenu}>Customer</h3>
-              </div>
-            </div>
+          <div className="mb-3">
+            <Button
+              className={style.insideSquareButton}
+              onClick={() => props.customer(true, false)}
+            >
+              Customer
+            </Button>
           </div>
-          <div className={style.squareContainer}>
-            <div className={style.squareCard}>
-              <h3 className={style.squareMenu}>Travel Package</h3>
-            </div>
+          <div className="mb-3">
+            <Button
+              className={style.insideSquareButton}
+              onClick={() => props.order(true, false)}
+            >
+              Create Order
+            </Button>
           </div>
-          <div className={style.squareContainer}>
-            <div className={style.squareCard}>
-              <h3 className={style.squareMenu}>Create Order</h3>
-            </div>
+          <div className="mb-3">
+            <Button
+              className={style.insideSquareButton}
+              onClick={() => props.travel(true, false)}
+            >
+              Travel Packages
+            </Button>
           </div>
-          <div className={style.squareContainer}>
-            <div className={style.squareCard}>
-              <h5 className={style.squareMenu}>Show Ordered Travel Package</h5>
-            </div>
+          <div className="mb-3">
+            <Button
+              className={style.insideSquareButton}
+              onClick={() => props.orderedTravelPackage(true, false)}
+            >
+              Ordered Travel Packages
+            </Button>
           </div>
         </div>
       </Container>
