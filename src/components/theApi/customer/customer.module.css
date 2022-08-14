@@ -1,3 +1,7 @@
+.exitButton {
+  position: absolute;
+}
+
 .editAndDeleteShow {
   visibility: visible;
 }

@@ -1,7 +1,7 @@
 // import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faDeleteLeft,
+  faCircleXmark,
   faPencil,
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
@@ -35,6 +35,14 @@ function Customer(props) {
     email: "",
     address: "",
   });
+  const [createTemporaryData, setCreateTemporaryData] = useState({
+    name: "",
+    phone: "",
+    email: "",
+    address: "",
+  });
+
+  const [deleteTemporaryData, setDeleteTemporaryData] = useState("");
 
   const theToken = localStorage.getItem("token");
   // console.log(theToken);
@@ -82,16 +90,34 @@ function Customer(props) {
         }
       )
       .then((res) => {
-        console.log(res.data);
-        // const theData = res.data;
-        // setTemporaryData({
-        //   ...theData,
-        // });
+        const theData = res.data;
+        setCreateTemporaryData({
+          ...theData,
+        });
       })
       .catch((err) => {
         console.log(err);
       });
   };
+
+  const handleDeleteTemporaryData = (data) => {
+    setDeleteTemporaryData(data.id);
+    axios
+      .delete(`http://localhost:1337/customers/${data.id}`, {
+        headers: {
+          Authorization: `Bearer ${theToken}`,
+        },
+      })
+      .then((res) => {
+        const theData = res.data.id;
+        setDeleteTemporaryData(theData);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  // console.log(deleteTemporaryData);
 
   const enterColumnIndex = (value) => {
     setColumnIndex(value);
@@ -212,12 +238,13 @@ function Customer(props) {
           </Form>
         </Modal.Body>
       </Modal>
-      <Container>
-        <div className="d-flex">
-          <FontAwesomeIcon
-            icon={faDeleteLeft}
-            onClick={() => props.customer(false, true)}
-          />
+      <Container className="position-relative">
+        <FontAwesomeIcon
+          icon={faCircleXmark}
+          onClick={() => props.customer(false, true)}
+          className={style.exitButton}
+        />
+        <div className="d-flex justify-content-center">
           <h3>Customer</h3>
         </div>
         <div>
@@ -241,26 +268,56 @@ function Customer(props) {
                         onMouseEnter={() => enterColumnIndex(index)}
                         onMouseLeave={() => enterColumnIndex("")}
                       >
-                        <th scope="row">{item.id}</th>
+                        <th scope="row">
+                          {item.id !== deleteTemporaryData && index + 1}
+                        </th>
                         <td>
-                          {item.id === temporaryData.id
+                          {item.id === temporaryData.id &&
+                          item.id !== deleteTemporaryData
                             ? temporaryData.name
-                            : item.name}
+                            : item.id !== temporaryData.id &&
+                              item.id !== deleteTemporaryData
+                            ? item.name
+                            : item.id !== temporaryData.id &&
+                              item.id === deleteTemporaryData
+                            ? null
+                            : null}
                         </td>
                         <td>
-                          {item.id === temporaryData.id
+                          {item.id === temporaryData.id &&
+                          item.id !== deleteTemporaryData
                             ? temporaryData.phone
-                            : item.phone}
+                            : item.id !== temporaryData.id &&
+                              item.id !== deleteTemporaryData
+                            ? item.phone
+                            : item.id !== temporaryData.id &&
+                              item.id === deleteTemporaryData
+                            ? null
+                            : null}
                         </td>
                         <td>
-                          {item.id === temporaryData.id
+                          {item.id === temporaryData.id &&
+                          item.id !== deleteTemporaryData
                             ? temporaryData.email
-                            : item.email}
+                            : item.id !== temporaryData.id &&
+                              item.id !== deleteTemporaryData
+                            ? item.email
+                            : item.id !== temporaryData.id &&
+                              item.id === deleteTemporaryData
+                            ? null
+                            : null}
                         </td>
                         <td>
-                          {item.id === temporaryData.id
+                          {item.id === temporaryData.id &&
+                          item.id !== deleteTemporaryData
                             ? temporaryData.address
-                            : item.address}
+                            : item.id !== temporaryData.id &&
+                              item.id !== deleteTemporaryData
+                            ? item.address
+                            : item.id !== temporaryData.id &&
+                              item.id === deleteTemporaryData
+                            ? null
+                            : null}
                         </td>
                         <td
                           className={
@@ -275,7 +332,7 @@ function Customer(props) {
                           >
                             <FontAwesomeIcon icon={faPencil} />
                           </span>
-                          <span onClick={handleShow}>
+                          <span onClick={() => handleDeleteTemporaryData(item)}>
                             <FontAwesomeIcon icon={faTrash} />
                           </span>
                         </td>

@@ -20,8 +20,7 @@ function Home() {
   const [orderedTravelPackage, setOrderedTravelPackage] = useState(false);
 
   const [customerData, setCustomerData] = useState([]);
-
-  const [hoverData, setHoverData] = useState();
+  const [travelPackagesData, setTravelPackagesData] = useState([]);
 
   const theToken = localStorage.getItem("token");
 
@@ -39,7 +38,6 @@ function Home() {
   };
 
   const customerPanel = (value, value2) => {
-    console.log(theToken);
     if (value) {
       axios
         .get(`http://localhost:1337/customers`, {
@@ -60,9 +58,23 @@ function Home() {
     setListOfApi(value2);
   };
 
-  // console.log(customerData);
-
   const travelPanel = (value, value2) => {
+    if (value) {
+      axios
+        .get(`http://localhost:1337/travel-packages`, {
+          headers: {
+            Authorization: `Bearer ${theToken}`,
+          },
+        })
+        .then((res) => {
+          setTravelPackagesData(res.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } else {
+      setTravelPackagesData([]);
+    }
     setTravel(value);
     setListOfApi(value2);
   };
@@ -71,8 +83,6 @@ function Home() {
     setOrder(value);
     setListOfApi(value2);
   };
-
-  console.log(order);
 
   const orderedTravelPackagePanel = (value, value2) => {
     setOrderedTravelPackage(value);
@@ -109,11 +119,13 @@ function Home() {
           </Row>
         </Container>
       )}
-      <Customer
-        customer={customerPanel}
-        listOfApi={ListOfApiPanel}
-        customerData={customerData}
-      />
+      {customer && (
+        <Customer
+          customer={customerPanel}
+          listOfApi={ListOfApiPanel}
+          customerData={customerData}
+        />
+      )}
       {order && (
         <Container>
           <CreateOrder listOfApi={ListOfApiPanel} order={orderPanel} />
@@ -121,7 +133,11 @@ function Home() {
       )}
       {travel && (
         <Container>
-          <TravelPackages listOfApi={ListOfApiPanel} travel={travelPanel} />
+          <TravelPackages
+            listOfApi={ListOfApiPanel}
+            travel={travelPanel}
+            travelPackagesData={travelPackagesData}
+          />
         </Container>
       )}
       {orderedTravelPackage && (
